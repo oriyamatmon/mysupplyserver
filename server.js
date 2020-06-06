@@ -3,18 +3,14 @@ require('dotenv').config({ path: `${__dirname}/./.env` });
 
 const app = express();
 const helmet = require('helmet');
-const session = require('express-session');
-const lusca = require('lusca');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const sequelize = require('./db/sequelize');
-const { LUSCA_OPTIONS, APP_SESSION, RATE_LIMITER } = require('./config/config');
-// show nice console text
-const text = require('./loadingCliText');
+
+const { RATE_LIMITER } = require('./config/config');
 /* eslint-disable no-console */
 console.clear();
-console.log(text);
 const { logger } = require('./app/util');
 
 // eslint-disable-next-line no-undef
@@ -29,12 +25,6 @@ app.use(cookieParser());
 
 app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 const apiLimiter = rateLimit(RATE_LIMITER);
-
-// create session for requests
-app.use(session(APP_SESSION));
-
-// add lusca to protect header
-app.use(lusca(LUSCA_OPTIONS));
 
 // only apply to requests that begin with /api/
 app.use('/api/', apiLimiter);
@@ -54,5 +44,16 @@ require('./app/util/errorHandler');
 
 // start our server on port set in .env file
 app.listen(PORT, () => logger.info(`Server started running... on port: ${PORT}`));
+
+// check connection to DB
+sequelize
+  .authenticate()
+  .then(() => {
+    logger.info('Connection to database has been established successfully.');
+    return 'bla';
+  })
+  .catch(err => {
+    logger.debug('Unable to connect to the database:', err);
+  });
 
 sequelize.sync();

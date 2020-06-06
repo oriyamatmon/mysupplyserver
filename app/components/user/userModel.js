@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../../../db/sequelize');
+const { encryption } = require('../../util');
 
 const { Model, DataTypes } = Sequelize;
 class User extends Model {}
@@ -32,16 +33,14 @@ User.init(
       unique: true,
       allowNull: false
       // allowNull defaults to true
-    },
-    permissionsId: {
-      type: Sequelize.INTEGER
-      // allowNull defaults to true
     }
   },
   {
     hooks: {
-      beforeCreate: (user, options) => {
-        console.log(`i am before create hook! this is the user ${user}`);
+      beforeCreate: async user => {
+        // encyrpt the user password so it wont be shown on the database
+        const hashedPassword = await encryption.hashPassword(user.password);
+        user.password = hashedPassword;
       }
     },
     sequelize,

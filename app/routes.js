@@ -1,6 +1,6 @@
 // const path = require('path');
 const cors = require('cors'); // add cors
-const { user } = require('./components');
+const { user, permissions } = require('./components');
 const { CORS_WHITE_LIST } = require('../config/config');
 
 const corsOptions = {

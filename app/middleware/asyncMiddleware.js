@@ -6,10 +6,7 @@ const asyncUtil = fn =>
     const fnReturn = fn(...args);
     const next = args[args.length - 1];
     return Promise.resolve(fnReturn).catch(next => {
-      logger.error(
-        'asyncMiddleware',
-        next.stack ? { msg: next.message, stack: next.stack } : next
-      );
+      logger.error('asyncMiddleware', next.stack ? { msg: next.message, stack: next.stack } : next);
       return null;
     });
   };
