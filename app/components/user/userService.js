@@ -12,7 +12,7 @@ const createUser = async user => {
     if (userExist) return ['user already exist'];
     // insert the user to the database
     await userModel.create(user);
-    // if everything is ok we will send an empty array
+    // if everything is ok we will send an empty array.
     return [];
   } catch (error) {
     logger.debug(`error while creating user:${error}`);
